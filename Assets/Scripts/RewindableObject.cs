@@ -13,8 +13,8 @@ public struct CashedState
 public class RewindableObject : MonoBehaviour
 {
     public static event Action OnRewindingFinished;
-    
-    private static List<RewindableObject> rewindableObjects = new List<RewindableObject>();
+
+    private static List<RewindableObject> rewindableObjects;
     private static bool isAllObjectsAsleep = true;
 
     private Rigidbody cashedRigidbody;
@@ -29,6 +29,7 @@ public class RewindableObject : MonoBehaviour
 
     private void Awake()
     {
+        rewindableObjects ??= new List<RewindableObject>();
         rewindableObjects.Add(this);
         
         settings = GameManager.S.settings;
@@ -86,11 +87,11 @@ public class RewindableObject : MonoBehaviour
     private IEnumerator StatesWritingCoroutine()
     {
         isWriting = true;
-        while (!isAllObjectsAsleep)
+        do
         {
             WriteDownState();
             yield return new WaitForFixedUpdate();
-        }
+        } while (!isAllObjectsAsleep);
         isWriting = false;
     }
     
